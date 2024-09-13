@@ -1,0 +1,23 @@
+{
+  "name": "create-css-utilities",
+  "version": "1.0.1",
+  "description": "Create-CSS-Utilities is an executable script library that generates shorthand CSS class names. It enhances code readability and speeds up the CSS styling process.",
+  "bin": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "keywords": [
+    "css",
+    "utilities",
+    "front-end",
+    "css-utilities-generator"
+  ],
+  "author": "JimGitFE",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "commander": "^12.1.0",
+    "typescript": "^5.6.2"
+  }
+}
