@@ -1,0 +1,36 @@
+name: NPM Continuous Deployment
+
+on:
+  release:
+    types: [ created ]
+  workflow_dispatch: # Execute with workflow_dispatch
+    
+jobs:
+  npm-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js 20.10
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.10'
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run build
+        run: npm run build
+
+      - name: Run tests
+        run: npm run git-test
+
+      - name: Remove cuconfig.json
+        run: npm run rm-config
+
+      - name: Publish to NPM
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
