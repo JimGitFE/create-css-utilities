@@ -6,9 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.installDependencies = void 0;
 exports.addScriptToPackageJson = addScriptToPackageJson;
 exports.writeFileInRoot = writeFileInRoot;
+exports.askUser = askUser;
+exports.isValidPath = isValidPath;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const child_process_1 = require("child_process");
+const readline_1 = __importDefault(require("readline"));
 const runCommand = (command) => {
     try {
         (0, child_process_1.execSync)(command, { stdio: "inherit" });
@@ -19,9 +22,7 @@ const runCommand = (command) => {
     }
 };
 const installDependencies = (dependencies) => {
-    dependencies.forEach((dependency) => {
-        runCommand(`npm i -D ${dependency}@latest`);
-    });
+    runCommand(`npm i -D ${dependencies.join("@latest ")}`);
 };
 exports.installDependencies = installDependencies;
 const packageJsonPath = path_1.default.resolve(process.cwd(), 'package.json');
@@ -39,8 +40,34 @@ function addScriptToPackageJson(scriptName, scriptCommand) {
     packageJson.scripts[scriptName] = scriptCommand;
     // Write changes back to package.json
     fs_1.default.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2), 'utf8');
-    console.log(`Script "${scriptName}" added to package.json.`);
 }
-function writeFileInRoot(file) {
-    fs_1.default.writeFileSync(path_1.default.resolve(process.cwd(), 'nodemon.json'), JSON.stringify(file, null, 2), 'utf8');
+function writeFileInRoot(fileName, file) {
+    fs_1.default.writeFileSync(path_1.default.resolve(process.cwd(), fileName), JSON.stringify(file, null, 2), 'utf8');
+}
+function askUser(title, reply, defaultAnswer, callback) {
+    // Create readline interface
+    const rl = readline_1.default.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+    // Ask user for file path
+    rl.question(title, (filePath) => {
+        // Use default if no path provided
+        if (!filePath) {
+            filePath = defaultAnswer;
+        }
+        callback(filePath);
+        console.log(reply);
+        // Rest of your code here...
+        rl.close();
+    });
+}
+function isValidPath(filePath) {
+    try {
+        path_1.default.parse(filePath);
+        return true;
+    }
+    catch (error) {
+        return false;
+    }
 }
